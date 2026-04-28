@@ -1,0 +1,1124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>The No-Start Reset · CLEARFORM</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    /* ── RESET & BASE ─────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:           #F7F5F2;
+      --text:         #2E2E33;
+      --muted:        #8A8A94;
+      --light:        #B5B5BF;
+      --primary:      #5C6AC4;
+      --primaryHover: #4A58B2;
+      --primaryLight: #EEF0FB;
+      --sage:         #8FB9A8;
+      --sageLight:    #EDF4F1;
+      --rose:         #E8A598;
+      --card:         #FFFFFF;
+      --border:       #E5E5E5;
+      --shadow:       0 2px 16px rgba(46,46,51,0.07);
+
+      /* ── fluid scale: 16px on 375px → 20px on 1400px ── */
+      --fs-base:   clamp(15px, 1.4vw, 19px);
+      --fs-sm:     clamp(13px, 1.15vw, 16px);
+      --fs-xs:     clamp(11px, 0.95vw, 14px);
+      --fs-h:      clamp(24px, 2.6vw, 36px);
+      --fs-timer:  clamp(38px, 4vw,   58px);
+      --fs-word:   clamp(24px, 2.8vw, 38px);
+      --fs-emoji:  clamp(36px, 4vw,   54px);
+      --fs-lbl:    clamp(10px, 0.85vw, 13px);
+
+      --gap-sm:    clamp(6px,  0.7vw, 10px);
+      --gap-md:    clamp(10px, 1.1vw, 16px);
+      --gap-lg:    clamp(18px, 2vw,   28px);
+
+      --radius-sm: clamp(10px, 1.1vw, 14px);
+      --radius-md: clamp(12px, 1.4vw, 18px);
+      --radius-lg: clamp(14px, 1.6vw, 22px);
+
+      --pad-btn:   clamp(14px, 1.5vw, 20px) clamp(18px, 2vw, 28px);
+      --pad-card:  clamp(16px, 1.8vw, 26px) clamp(16px, 2vw, 28px);
+      --pad-inp:   clamp(13px, 1.4vw, 18px) clamp(14px, 1.6vw, 20px);
+      --pad-sinp:  clamp(11px, 1.1vw, 15px) clamp(13px, 1.3vw, 18px);
+    }
+
+    html { height: 100%; }
+
+    body {
+      min-height: 100vh;
+      background: var(--bg);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: var(--fs-base);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: clamp(24px, 3vw, 60px) clamp(16px, 4vw, 48px);
+      padding-bottom: max(clamp(40px, 4vw, 80px), env(safe-area-inset-bottom, 40px));
+    }
+
+    /* ── LAYOUT WRAPPER ───────────────────────────────────── */
+    #app {
+      width: 100%;
+      /* grows with screen but stays readable: 560px on tablet, 640px on desktop */
+      max-width: clamp(360px, 55vw, 640px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    /* ── ANIMATIONS ───────────────────────────────────────── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn  { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes glowPulse {
+      0%,100% { transform: scale(1);    opacity: 0.18; }
+      50%     { transform: scale(1.22); opacity: 0.09; }
+    }
+    @keyframes corePulse {
+      0%,100% { transform: scale(1);    opacity: 0.62; }
+      50%     { transform: scale(1.08); opacity: 0.78; }
+    }
+    @keyframes timerTick { 0%,100% { opacity: 1; } 50% { opacity: 0.45; } }
+    @keyframes btnPop    { from { opacity: 0.28; transform: scale(.97); } to { opacity: 1; transform: scale(1); } }
+
+    .screen  { animation: fadeUp .34s cubic-bezier(.22,.68,0,1.1) both; }
+    .fade-in { animation: fadeIn .28s ease both; }
+
+    /* ── SCREEN ───────────────────────────────────────────── */
+    .scr {
+      display: flex;
+      flex-direction: column;
+      gap: var(--gap-lg);
+    }
+    .scr.center { align-items: center; text-align: center; }
+
+    /* ── TYPOGRAPHY ───────────────────────────────────────── */
+    .lbl {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: var(--fs-lbl);
+      font-weight: 600;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--light);
+    }
+    h2.h {
+      font-family: 'Lora', serif;
+      font-size: var(--fs-h);
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.28;
+    }
+    .sub {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: var(--fs-base);
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
+    /* ── CARD ─────────────────────────────────────────────── */
+    .card {
+      background: var(--card);
+      border-radius: var(--radius-lg);
+      padding: var(--pad-card);
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+    }
+
+    /* ── BUTTONS ──────────────────────────────────────────── */
+    button { font-family: 'Plus Jakarta Sans', sans-serif; cursor: pointer; }
+
+    .btn-p {
+      width: 100%;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-md);
+      padding: var(--pad-btn);
+      font-size: var(--fs-base);
+      font-weight: 600;
+      transition: background .18s, transform .12s, box-shadow .18s;
+      box-shadow: 0 3px 14px rgba(92,106,196,.26);
+      -webkit-tap-highlight-color: transparent;
+    }
+    .btn-p:hover  { background: var(--primaryHover); box-shadow: 0 5px 20px rgba(92,106,196,.36); }
+    .btn-p:active { transform: scale(.98); }
+    .btn-p:disabled { opacity: .28; cursor: not-allowed; transform: none; box-shadow: none; }
+    .btn-p.pop { animation: btnPop .24s cubic-bezier(.22,.68,0,1.2) both; }
+
+    .btn-sage {
+      width: 100%;
+      background: var(--sage);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-md);
+      padding: var(--pad-btn);
+      font-size: var(--fs-base);
+      font-weight: 600;
+      transition: background .18s, transform .12s;
+      box-shadow: 0 3px 14px rgba(143,185,168,.28);
+      -webkit-tap-highlight-color: transparent;
+    }
+    .btn-sage:hover  { background: #7aaa97; }
+    .btn-sage:active { transform: scale(.98); }
+
+    .btn-s {
+      width: 100%;
+      background: transparent;
+      color: var(--text);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: var(--pad-btn);
+      font-size: var(--fs-base);
+      font-weight: 500;
+      transition: border-color .18s, background .18s, transform .12s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .btn-s:hover  { border-color: var(--primary); color: var(--primary); background: var(--primaryLight); }
+    .btn-s:active { transform: scale(.98); }
+
+    .btn-g {
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-size: var(--fs-sm);
+      font-weight: 500;
+      padding: clamp(7px,0.7vw,10px) clamp(10px,1vw,14px);
+      border-radius: 8px;
+      transition: color .18s, background .18s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .btn-g:hover { color: var(--text); background: rgba(46,46,51,.05); }
+
+    .btn-lnk {
+      background: none;
+      border: none;
+      color: var(--light);
+      font-size: var(--fs-sm);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      transition: color .18s;
+      padding: 4px 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .btn-lnk:hover { color: var(--muted); }
+
+    /* ── INPUTS ───────────────────────────────────────────── */
+    .inp {
+      width: 100%;
+      background: #FAFAF8;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: var(--pad-inp);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: var(--fs-base);
+      color: var(--text);
+      outline: none;
+      transition: border-color .2s, box-shadow .2s;
+      resize: none;
+      -webkit-appearance: none;
+    }
+    .inp:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(92,106,196,.10); }
+    .inp::placeholder { color: var(--light); }
+
+    .sinp {
+      width: 100%;
+      background: #FAFAF8;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: var(--pad-sinp);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: var(--fs-sm);
+      color: var(--text);
+      outline: none;
+      transition: border-color .2s, box-shadow .2s;
+      -webkit-appearance: none;
+    }
+    .sinp:focus  { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(92,106,196,.10); }
+    .sinp::placeholder { color: var(--light); }
+    .sinp.filled { border-color: #D0D0D0; }
+
+    .winp {
+      width: 100%;
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid var(--border);
+      padding: clamp(8px,1vw,13px) 4px;
+      font-family: 'Lora', serif;
+      font-size: var(--fs-word);
+      font-weight: 500;
+      color: var(--text);
+      text-align: center;
+      outline: none;
+      transition: border-color .2s;
+      -webkit-appearance: none;
+    }
+    .winp:focus { border-bottom-color: var(--primary); }
+    .winp::placeholder { color: var(--light); font-style: italic; }
+
+    /* ── PILLS ────────────────────────────────────────────── */
+    .pill {
+      display: flex;
+      align-items: center;
+      gap: clamp(9px, 1vw, 13px);
+      padding: clamp(11px,1.2vw,16px) clamp(12px,1.4vw,18px);
+      border-radius: var(--radius-sm);
+      border: 1.5px solid var(--border);
+      background: var(--card);
+      cursor: pointer;
+      transition: all .18s;
+      width: 100%;
+      text-align: left;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .pill:hover     { border-color: var(--primary); background: var(--primaryLight); }
+    .pill.sel       { border-color: var(--primary); background: var(--primaryLight); box-shadow: 0 0 0 3px rgba(92,106,196,.09); }
+
+    .ocard {
+      padding: clamp(14px,1.5vw,20px) clamp(13px,1.4vw,18px);
+      border-radius: var(--radius-md);
+      border: 1.5px solid var(--border);
+      background: var(--card);
+      cursor: pointer;
+      transition: all .18s;
+      text-align: left;
+      width: 100%;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .ocard:hover { border-color: var(--sage); background: var(--sageLight); }
+
+    /* ── DOT ──────────────────────────────────────────────── */
+    .dot {
+      display: inline-block;
+      width: clamp(6px,0.6vw,9px); height: clamp(6px,0.6vw,9px);
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    /* ── GLOW ─────────────────────────────────────────────── */
+    .glow-wrap {
+      position: relative;
+      width: clamp(110px, 14vw, 180px);
+      height: clamp(110px, 14vw, 180px);
+      margin: 0 auto;
+    }
+    .glow-outer {
+      position: absolute; inset: 0; border-radius: 50%;
+      background: radial-gradient(circle, #E8A59833 0%, #E8A59808 65%, transparent 100%);
+      animation: glowPulse 5s ease-in-out infinite;
+    }
+    .glow-mid {
+      position: absolute; inset: 14%; border-radius: 50%;
+      background: radial-gradient(circle, #F2C4B844 0%, #E8A59822 60%, transparent 100%);
+      animation: glowPulse 5s ease-in-out .5s infinite;
+    }
+    .glow-core {
+      position: absolute; inset: 30%; border-radius: 50%;
+      background: radial-gradient(circle at 38% 36%, #FDF0EC 0%, #EFC4B6 55%, #DBA898 100%);
+      animation: corePulse 5s ease-in-out 1s infinite;
+      box-shadow: 0 6px 28px rgba(232,165,152,.30);
+    }
+
+    /* ── RING TIMER ───────────────────────────────────────── */
+    .ring-wrap { position: relative; display: flex; justify-content: center; }
+    .ring-svg  { width: clamp(160px, 22vw, 240px); height: clamp(160px, 22vw, 240px); }
+    .ring-label {
+      position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+    }
+    .ring-time {
+      font-family: 'Lora', serif;
+      font-size: var(--fs-timer);
+      font-weight: 500;
+      color: var(--text);
+      letter-spacing: -.02em;
+      line-height: 1;
+    }
+    .ring-time.done    { color: var(--sage); }
+    .ring-time.ticking { animation: timerTick 2.4s ease-in-out infinite; }
+    .ring-sub {
+      font-size: var(--fs-xs);
+      color: var(--light);
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    /* ── UTILITY ──────────────────────────────────────────── */
+    .flex-col   { display: flex; flex-direction: column; }
+    .gap-6      { gap: var(--gap-sm); }
+    .gap-7      { gap: var(--gap-sm); }
+    .gap-8      { gap: var(--gap-sm); }
+    .gap-9      { gap: var(--gap-md); }
+    .gap-10     { gap: var(--gap-md); }
+    .gap-12     { gap: var(--gap-md); }
+    .gap-22     { gap: var(--gap-lg); }
+    .w-full     { width: 100%; }
+    .center-row { display: flex; justify-content: center; }
+
+    /* hide/show screens */
+    .screen-panel         { display: none; }
+    .screen-panel.active  { display: block; }
+
+    /* ── STEP NUMBER BADGE ────────────────────────────────── */
+    .step-num {
+      width: clamp(24px,2.4vw,34px); height: clamp(24px,2.4vw,34px);
+      border-radius: 50%;
+      background: var(--primaryLight); color: var(--primary);
+      display: flex; align-items: center; justify-content: center;
+      font-size: var(--fs-xs); font-weight: 700; flex-shrink: 0;
+    }
+
+    /* ── RUNNING BAR ──────────────────────────────────────── */
+    .running-bar {
+      width: 100%;
+      padding: clamp(12px,1.3vw,18px) clamp(16px,2vw,26px);
+      border-radius: var(--radius-md);
+      background: var(--sageLight);
+      border: 1px solid rgba(143,185,168,.27);
+      text-align: center;
+      font-size: var(--fs-base);
+      color: var(--sage);
+      font-weight: 500;
+    }
+
+    /* ── DONE ORB ─────────────────────────────────────────── */
+    .done-orb {
+      width: clamp(54px, 6vw, 80px);
+      height: clamp(54px, 6vw, 80px);
+      border-radius: 50%;
+      margin: 0 auto;
+      background: radial-gradient(circle at 38% 36%, #FDF0EC 0%, #E8A598 60%, #C8A4B4 100%);
+      opacity: .72;
+      animation: corePulse 4s ease-in-out infinite;
+      box-shadow: 0 4px 20px rgba(232,165,152,.25);
+    }
+
+    /* Accessibility */
+    :focus-visible { outline: 3px solid var(--primary); outline-offset: 3px; }
+
+    /* ── INLINE HELPERS (replaces hardcoded font-sizes in HTML) ── */
+    .fs-note   { font-size: var(--fs-xs);  color: var(--light); }
+    .fs-task   { font-size: var(--fs-sm);  color: var(--primary); font-weight: 500; }
+    .fs-eg-ttl { font-size: var(--fs-xs);  color: var(--sage); font-weight: 600; letter-spacing: .07em; text-transform: uppercase; }
+    .fs-eg-bod { font-size: var(--fs-sm);  color: #5A7A70; margin-top: 5px; line-height: 1.7; }
+    .fs-step-n { font-size: var(--fs-xs);  color: var(--light); font-weight: 600; min-width: clamp(14px,1.6vw,22px); text-align: center; }
+    .fs-pick-q { font-size: var(--fs-sm);  font-weight: 600; color: var(--text); }
+    .fs-timer-step { font-family: 'Lora', serif; font-size: clamp(16px,1.9vw,24px); color: var(--text); line-height: 1.4; font-style: italic; }
+    .fs-freeze { font-size: var(--fs-sm);  color: #4A7A6A; text-align: center; line-height: 1.6; }
+    .fs-ocard-ttl { font-size: var(--fs-base); font-weight: 600; color: var(--text); margin-bottom: 2px; }
+    .fs-ocard-sub { font-size: var(--fs-sm);  color: var(--muted); line-height: 1.5; }
+    .fs-ocard-em  { font-size: clamp(19px, 2.2vw, 28px); }
+    .fs-env-txt   { font-size: var(--fs-base); color: var(--text); }
+    .fs-smaller-cur { font-size: var(--fs-sm); color: var(--primary); font-weight: 500; }
+    .fs-cont-step   { font-family: 'Lora', serif; font-size: clamp(15px,1.7vw,22px); color: var(--text); font-style: italic; line-height: 1.4; }
+    .fs-feel-echo   { margin-top: 12px; font-size: var(--fs-sm); color: var(--muted); text-align: center; line-height: 1.6; display: none; }
+    .fs-footer      { font-size: var(--fs-xs); color: var(--light); text-align: center; line-height: 1.6; }
+    .fs-check       { color: var(--primary); font-size: var(--fs-sm); font-weight: 600; }
+    .pill-label     { font-size: var(--fs-sm); color: var(--text); flex: 1; }
+    .smaller-echo   { padding: clamp(8px,0.9vw,12px) clamp(11px,1.2vw,16px); background: var(--primaryLight); border-radius: var(--radius-sm); border: 1px solid rgba(92,106,196,.16); }
+  </style>
+</head>
+<body>
+
+<div id="app">
+
+  <!-- ══════════════ WELCOME ══════════════ -->
+  <div id="s-welcome" class="screen-panel active">
+    <div class="scr center screen">
+      <!-- Glow -->
+      <div class="glow-wrap">
+        <div class="glow-outer"></div>
+        <div class="glow-mid"></div>
+        <div class="glow-core"></div>
+      </div>
+      <!-- Copy -->
+      <div class="flex-col gap-10">
+        <h2 class="h">You're not lazy.<br />Your brain is overloaded.</h2>
+        <p class="sub">When a task feels too big or unclear — your brain freezes. This tool helps you <em>start</em>.</p>
+      </div>
+      <!-- CTA -->
+      <div class="flex-col gap-10 w-full">
+        <p class="sub fs-note" style="text-align:center;">Takes under 2 minutes. No pressure.</p>
+        <button class="btn-p" onclick="go('s-task')">Start reset</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════ TASK ══════════════ -->
+  <div id="s-task" class="screen-panel">
+    <div class="scr screen">
+      <div class="flex-col gap-7">
+        <span class="lbl">Step 1 of 3</span>
+        <h2 class="h">What are you avoiding?</h2>
+        <p class="sub">Just write it. Seeing it helps.</p>
+      </div>
+      <div class="flex-col gap-5" style="gap:5px;">
+        <textarea id="task-input" class="inp" rows="3"
+          placeholder="e.g. Reply to emails, clean the kitchen, start that report…"
+          oninput="onTaskInput()"></textarea>
+        <span class="fs-note" style="padding-left:4px;">Type one thing — that's enough.</span>
+      </div>
+      <div class="flex-col gap-10">
+        <button id="task-next" class="btn-p" disabled onclick="goSteps()">Next</button>
+        <div class="center-row">
+          <button class="btn-g" onclick="go('s-welcome')">← Back</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════ STEPS ══════════════ -->
+  <div id="s-steps" class="screen-panel">
+    <div class="scr screen">
+      <div class="flex-col gap-7">
+        <span class="lbl">Step 2 of 3</span>
+        <h2 class="h">Make it tiny</h2>
+        <p class="sub">Write 2–4 very small steps to begin.</p>
+      </div>
+
+      <!-- task echo -->
+      <div id="steps-task-echo" style="display:flex;align-items:center;gap:9px;padding:9px 13px;background:var(--primaryLight);border-radius:10px;border:1px solid rgba(92,106,196,.16);">
+        <span class="dot" style="background:var(--primary);"></span>
+        <span id="steps-task-text" class="fs-task"></span>
+      </div>
+
+      <!-- example -->
+      <div style="padding:12px 14px;background:var(--sageLight);border-radius:12px;border:1px solid rgba(143,185,168,.25);">
+        <span class="fs-eg-ttl">Example</span>
+        <p class="fs-eg-bod">
+          Clean the kitchen →<br />
+          &nbsp;→ Put one plate in the sink<br />
+          &nbsp;→ Throw one item away
+        </p>
+      </div>
+
+      <!-- step inputs -->
+      <div class="flex-col gap-8" id="step-inputs-wrap">
+        <div style="display:flex;align-items:center;gap:9px;">
+          <span class="fs-step-n">1</span>
+          <input class="sinp" placeholder="First small step…" oninput="onStepInput()" id="step-0" />
+        </div>
+        <div style="display:flex;align-items:center;gap:9px;">
+          <span class="fs-step-n">2</span>
+          <input class="sinp" placeholder="Second step…" oninput="onStepInput()" id="step-1" />
+        </div>
+        <div style="display:flex;align-items:center;gap:9px;">
+          <span class="fs-step-n">3</span>
+          <input class="sinp" placeholder="Step 3 (optional)" oninput="onStepInput()" id="step-2" />
+        </div>
+        <div style="display:flex;align-items:center;gap:9px;">
+          <span class="fs-step-n">4</span>
+          <input class="sinp" placeholder="Step 4 (optional)" oninput="onStepInput()" id="step-3" />
+        </div>
+      </div>
+
+      <!-- step picker (shown when at least 1 step filled) -->
+      <div id="step-picker" style="display:none;" class="flex-col gap-8 fade-in">
+        <p class="fs-pick-q">Which step will you do first?</p>
+        <div id="pill-list" class="flex-col gap-8"></div>
+      </div>
+
+      <div class="flex-col gap-10">
+        <button id="steps-start-btn" class="btn-p" disabled onclick="startFromSteps()">Start 2-minute reset →</button>
+        <div class="center-row">
+          <button class="btn-g" onclick="go('s-task')">← Back</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════ TIMER ══════════════ -->
+  <div id="s-timer" class="screen-panel">
+    <div class="scr center screen">
+      <div class="flex-col gap-6" style="align-items:center;">
+        <span class="lbl">Step 3 of 3</span>
+        <h2 class="h" style="text-align:center;">2-minute reset</h2>
+      </div>
+
+      <!-- Ring -->
+      <div class="ring-wrap">
+        <svg id="ring-svg" class="ring-svg" viewBox="0 0 176 176" style="transform:rotate(-90deg);">
+          <circle cx="88" cy="88" r="72" fill="none" stroke="var(--border)" stroke-width="7"/>
+          <circle id="ring-arc" cx="88" cy="88" r="72" fill="none"
+            stroke="var(--primary)" stroke-width="7" stroke-linecap="round"
+            stroke-dasharray="452.39" stroke-dashoffset="452.39"
+            style="transition:stroke-dashoffset 1s linear,stroke .4s;"/>
+        </svg>
+        <div class="ring-label">
+          <span id="ring-time" class="ring-time">02:00</span>
+          <span id="ring-sub" class="ring-sub">ready</span>
+        </div>
+      </div>
+
+      <!-- Active step card -->
+      <div class="card" style="text-align:center;padding:15px 18px;">
+        <span class="lbl" id="timer-label" style="display:block;margin-bottom:6px;">Do this now:</span>
+        <p id="timer-step" class="fs-timer-step"></p>
+      </div>
+
+      <!-- Controls (before done) -->
+      <div id="timer-controls" class="flex-col gap-12 w-full" style="align-items:center;">
+        <button id="timer-start-btn" class="btn-p" onclick="mainTimerStart()">▶ Start</button>
+        <div id="timer-running-bar" class="running-bar" style="display:none;">Timer running…</div>
+        <button class="btn-lnk" onclick="mainTimerPause(); go('s-stuck')">I still can't start</button>
+      </div>
+
+      <!-- After done -->
+      <div id="timer-done-actions" class="flex-col gap-10 w-full fade-in" style="display:none;">
+        <div class="card" style="padding:13px 16px;background:var(--sageLight);border:1px solid rgba(143,185,168,.25);">
+          <p class="fs-freeze">You broke the freeze. That's the hardest part.</p>
+        </div>
+        <button class="btn-p" onclick="go('s-continue-pick')">Continue this step</button>
+        <button class="btn-s" onclick="goNextStep()">Start next step</button>
+        <div class="center-row">
+          <button class="btn-g" onclick="go('s-done')">I'm done for now</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════ STUCK ══════════════ -->
+  <div id="s-stuck" class="screen-panel">
+    <div class="scr screen">
+      <div class="flex-col gap-7">
+        <h2 class="h">Still can't start?</h2>
+        <p class="sub">Let's make this easier.</p>
+      </div>
+      <div class="flex-col gap-9">
+        <button class="ocard" onclick="go('s-stuck-env')">
+          <div style="display:flex;align-items:flex-start;gap:11px;">
+            <span class="fs-ocard-em">🌿</span>
+            <div>
+              <p class="fs-ocard-ttl">Change your environment</p>
+              <p class="fs-ocard-sub">A different spot resets your state.</p>
+            </div>
+          </div>
+        </button>
+        <button class="ocard" onclick="go('s-stuck-smaller')">
+          <div style="display:flex;align-items:flex-start;gap:11px;">
+            <span class="fs-ocard-em">✂️</span>
+            <div>
+              <p class="fs-ocard-ttl">Make it smaller</p>
+              <p class="fs-ocard-sub">Write an even tinier first action.</p>
+            </div>
+          </div>
+        </button>
+        <button class="ocard" onclick="go('s-stuck-lower')">
+          <div style="display:flex;align-items:flex-start;gap:11px;">
+            <span class="fs-ocard-em">💛</span>
+            <div>
+              <p class="fs-ocard-ttl">Lower the standard</p>
+              <p class="fs-ocard-sub">Allow yourself to do it badly. That's enough.</p>
+            </div>
+          </div>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════ STUCK — ENV ══════════════ -->
+  <div id="s-stuck-env" class="screen-panel">
+    <div class="scr screen">
+      <div class="flex-col gap-7">
+        <h2 class="h">Try this now</h2>
+        <p class="sub">Stand up, move to a different spot, sit again.</p>
+      </div>
+      <div class="card" style="padding:18px;">
+        <div style="display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--border);">
+          <div class="step-num">1</div>
+          <span class="fs-env-txt">Stand up.</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--border);">
+          <div class="step-num">2</div>
+          <span class="fs-env-txt">Move to a different spot.</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;padding:11px 0;">
+          <div class="step-num">3</div>
+          <span class="fs-env-txt">Sit down again.</span>
+        </div>
+      </div>
+      <button class="btn-p" onclick="goTimerFromStuck('In the new spot:')">Start 2-minute reset</button>
+    </div>
+  </div>
+
+  <!-- ══════════════ STUCK — SMALLER ══════════════ -->
+  <div id="s-stuck-smaller" class="screen-panel">
+    <div class="scr screen">
+      <div class="flex-col gap-7">
+        <h2 class="h">What is an even smaller step?</h2>
+        <p class="sub">The absolute minimum to begin.</p>
+      </div>
+      <div class="flex-col gap-7">
+        <div class="smaller-echo fs-smaller-cur">
+          Current: <em id="smaller-current"></em>
+        </div>
+        <input id="smaller-input" class="sinp" placeholder="Even tinier…" oninput="onSmallerInput()" />
+      </div>
+      <button id="smaller-btn" class="btn-p" disabled onclick="useSmallerStep()">Use this step</button>
+    </div>
+  </div>
+
+  <!-- ══════════════ STUCK — LOWER ══════════════ -->
+  <div id="s-stuck-lower" class="screen-panel">
+    <div class="scr center screen">
+      <div class="fs-ocard-em">💛</div>
+      <div class="flex-col gap-10">
+        <h2 class="h" style="text-align:center;">You don't need to do this well.</h2>
+        <p class="sub" style="text-align:center;">Just begin — even if it's messy.<br />Imperfect action beats perfect waiting.</p>
+      </div>
+      <button class="btn-p" onclick="goTimerFromStuck('Messy start:')">Try this for 2 minutes</button>
+    </div>
+  </div>
+
+  <!-- ══════════════ CONTINUE PICK ══════════════ -->
+  <div id="s-continue-pick" class="screen-panel">
+    <div class="scr center screen">
+      <div class="fs-ocard-em">⚡</div>
+      <div class="flex-col gap-8">
+        <h2 class="h" style="text-align:center;">Keep the momentum</h2>
+        <p class="sub" style="text-align:center;">How long do you want to continue?</p>
+      </div>
+      <div class="card" style="padding:14px 16px;text-align:center;">
+        <span class="lbl" style="display:block;margin-bottom:6px;">Continue:</span>
+        <p id="continue-step" class="fs-cont-step"></p>
+      </div>
+      <div class="flex-col gap-10 w-full">
+        <button class="btn-p" onclick="startContinue(120)">▶ 2 more minutes</button>
+        <button class="btn-sage" onclick="startContinue(300)">▶ 5 minutes</button>
+        <div class="center-row">
+          <button class="btn-g" onclick="go('s-done')">I'm done for now</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════ CONTINUING ══════════════ -->
+  <div id="s-continuing" class="screen-panel">
+    <div class="scr center screen">
+      <h2 class="h" style="text-align:center;">Keep going</h2>
+      <p class="sub" style="text-align:center;">Stay in it. You're doing it.</p>
+
+      <!-- Continue Ring -->
+      <div class="ring-wrap">
+        <svg id="cont-ring-svg" class="ring-svg" viewBox="0 0 176 176" style="transform:rotate(-90deg);">
+          <circle cx="88" cy="88" r="72" fill="none" stroke="var(--border)" stroke-width="7"/>
+          <circle id="cont-ring-arc" cx="88" cy="88" r="72" fill="none"
+            stroke="var(--primary)" stroke-width="7" stroke-linecap="round"
+            stroke-dasharray="452.39" stroke-dashoffset="452.39"
+            style="transition:stroke-dashoffset 1s linear,stroke .4s;"/>
+        </svg>
+        <div class="ring-label">
+          <span id="cont-ring-time" class="ring-time">02:00</span>
+          <span id="cont-ring-sub" class="ring-sub">going</span>
+        </div>
+      </div>
+
+      <!-- Step card -->
+      <div class="card" style="text-align:center;padding:14px 17px;">
+        <span class="lbl" style="display:block;margin-bottom:6px;">Continue:</span>
+        <p id="cont-step" class="fs-cont-step"></p>
+      </div>
+
+      <!-- During timer -->
+      <div id="cont-in-progress" class="center-row">
+        <button class="btn-g" onclick="contTimerPause(); go('s-done')">I'm done for now</button>
+      </div>
+
+      <!-- After done -->
+      <div id="cont-done-actions" class="flex-col gap-10 w-full fade-in" style="display:none;">
+        <div class="card" style="padding:13px 16px;background:var(--sageLight);border:1px solid rgba(143,185,168,.25);">
+          <p class="fs-freeze">You broke the freeze. That's the hardest part.</p>
+        </div>
+        <button class="btn-p" onclick="go('s-continue-pick')">Continue this step</button>
+        <button class="btn-s" onclick="goNextStep()">Start next step</button>
+        <div class="center-row">
+          <button class="btn-g" onclick="go('s-done')">I'm done for now</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════ DONE ══════════════ -->
+  <div id="s-done" class="screen-panel">
+    <div class="scr center screen">
+      <div class="done-orb"></div>
+
+      <div class="flex-col gap-10">
+        <h2 class="h" style="text-align:center;">You broke the freeze.</h2>
+        <p class="sub" style="text-align:center;">This is proof you can start.</p>
+      </div>
+
+      <div class="card w-full" style="padding:22px 18px;">
+        <span class="lbl" style="display:block;text-align:center;margin-bottom:14px;">One word: how do you feel?</span>
+        <input id="feel-word" class="winp" placeholder="…" maxlength="20" oninput="onFeelWord()" />
+        <p id="feel-echo" class="fs-feel-echo fade-in"></p>
+      </div>
+
+      <div class="flex-col gap-10 w-full">
+        <button class="btn-p" onclick="fullReset()">Start another reset</button>
+        <div class="center-row">
+          <button class="btn-g" onclick="fullReset()">Close</button>
+        </div>
+      </div>
+
+      <p class="fs-footer">
+        every attempt counts — even the ones that feel small
+      </p>
+    </div>
+  </div>
+
+</div><!-- /#app -->
+
+<script>
+/* ══════════════════════════════════════════════════════
+   STATE
+══════════════════════════════════════════════════════ */
+const state = {
+  task:        "",
+  stepList:    ["", "", "", ""],
+  stepIdx:     0,
+  activeStep:  "",
+  timerLabel:  "Do this now:",
+  smallerText: "",
+  feelWord:    "",
+};
+
+/* ══════════════════════════════════════════════════════
+   NAVIGATION
+══════════════════════════════════════════════════════ */
+function go(id) {
+  document.querySelectorAll('.screen-panel').forEach(el => el.classList.remove('active'));
+  const panel = document.getElementById(id);
+  panel.classList.add('active');
+  // Re-trigger animation
+  const scr = panel.querySelector('.scr');
+  if (scr) { scr.classList.remove('screen'); void scr.offsetWidth; scr.classList.add('screen'); }
+  // Screen-specific setup
+  onScreenEnter(id);
+}
+
+function onScreenEnter(id) {
+  if (id === 's-steps') {
+    document.getElementById('steps-task-text').textContent = state.task;
+    rebuildPills();
+    updateStepsBtn();
+  }
+  if (id === 's-timer') {
+    document.getElementById('timer-step').textContent   = state.activeStep;
+    document.getElementById('timer-label').textContent  = state.timerLabel;
+    mainTimerReset(120);
+    document.getElementById('timer-done-actions').style.display  = 'none';
+    document.getElementById('timer-controls').style.display      = 'flex';
+    document.getElementById('timer-start-btn').style.display     = 'block';
+    document.getElementById('timer-running-bar').style.display   = 'none';
+  }
+  if (id === 's-stuck-smaller') {
+    document.getElementById('smaller-current').textContent = state.activeStep;
+    document.getElementById('smaller-input').value = '';
+    state.smallerText = '';
+    document.getElementById('smaller-btn').disabled = true;
+    setTimeout(() => document.getElementById('smaller-input').focus(), 120);
+  }
+  if (id === 's-continue-pick') {
+    document.getElementById('continue-step').textContent = state.activeStep;
+  }
+  if (id === 's-continuing') {
+    document.getElementById('cont-step').textContent = state.activeStep;
+    document.getElementById('cont-in-progress').style.display    = 'flex';
+    document.getElementById('cont-done-actions').style.display   = 'none';
+  }
+  if (id === 's-done') {
+    document.getElementById('feel-word').value = '';
+    document.getElementById('feel-echo').style.display = 'none';
+    state.feelWord = '';
+    setTimeout(() => document.getElementById('feel-word').focus(), 120);
+  }
+}
+
+/* ══════════════════════════════════════════════════════
+   TASK SCREEN
+══════════════════════════════════════════════════════ */
+function onTaskInput() {
+  state.task = document.getElementById('task-input').value;
+  const btn  = document.getElementById('task-next');
+  btn.disabled = !state.task.trim();
+  btn.classList.toggle('pop', !!state.task.trim());
+}
+
+function goSteps() {
+  go('s-steps');
+}
+
+/* ══════════════════════════════════════════════════════
+   STEPS SCREEN
+══════════════════════════════════════════════════════ */
+function getFilledSteps() {
+  return state.stepList.filter(s => s.trim());
+}
+
+function onStepInput() {
+  for (let i = 0; i < 4; i++) {
+    const el = document.getElementById('step-' + i);
+    state.stepList[i] = el ? el.value : '';
+    if (el) el.classList.toggle('filled', !!el.value.trim());
+  }
+  rebuildPills();
+  updateStepsBtn();
+}
+
+function rebuildPills() {
+  const filled = getFilledSteps();
+  const picker = document.getElementById('step-picker');
+  const list   = document.getElementById('pill-list');
+  if (filled.length === 0) { picker.style.display = 'none'; return; }
+  picker.style.display = 'flex';
+  list.innerHTML = '';
+  filled.forEach((s, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'pill' + (state.stepIdx === i ? ' sel' : '');
+    btn.innerHTML = `
+      <span class="dot" style="background:${state.stepIdx === i ? 'var(--primary)' : 'var(--border)'}"></span>
+      <span class="pill-label">${escHtml(s)}</span>
+      ${state.stepIdx === i ? '<span class="fs-check">✓</span>' : ''}
+    `;
+    btn.onclick = () => { state.stepIdx = i; rebuildPills(); };
+    list.appendChild(btn);
+  });
+}
+
+function updateStepsBtn() {
+  document.getElementById('steps-start-btn').disabled = getFilledSteps().length === 0;
+}
+
+function startFromSteps() {
+  const filled = getFilledSteps();
+  const sel = filled[state.stepIdx] ?? filled[0] ?? state.task;
+  state.activeStep = sel;
+  state.timerLabel = "Do this now:";
+  go('s-timer');
+}
+
+/* ══════════════════════════════════════════════════════
+   TIMER — MAIN
+══════════════════════════════════════════════════════ */
+const CIRC = 2 * Math.PI * 72; // ≈ 452.39
+
+let mainTimer = { left: 120, total: 120, run: false, done: false, iv: null };
+
+function mainTimerReset(secs) {
+  clearInterval(mainTimer.iv);
+  mainTimer = { left: secs, total: secs, run: false, done: false, iv: null };
+  updateMainRing();
+}
+
+function mainTimerStart() {
+  if (mainTimer.done || mainTimer.run) return;
+  mainTimer.run = true;
+  document.getElementById('timer-start-btn').style.display   = 'none';
+  document.getElementById('timer-running-bar').style.display = 'block';
+  const sub = document.getElementById('ring-sub');
+  sub.textContent = 'going';
+  mainTimer.iv = setInterval(() => {
+    mainTimer.left--;
+    updateMainRing();
+    if (mainTimer.left <= 0) {
+      clearInterval(mainTimer.iv);
+      mainTimer.run = false;
+      mainTimer.done = true;
+      onMainTimerDone();
+    }
+  }, 1000);
+}
+
+function mainTimerPause() {
+  clearInterval(mainTimer.iv);
+  mainTimer.run = false;
+}
+
+function onMainTimerDone() {
+  document.getElementById('timer-controls').style.display    = 'none';
+  document.getElementById('timer-done-actions').style.display = 'flex';
+  // ring turns sage
+  document.getElementById('ring-arc').style.stroke = 'var(--sage)';
+  const t = document.getElementById('ring-time');
+  t.textContent = '✓'; t.classList.add('done'); t.classList.remove('ticking');
+  document.getElementById('ring-sub').style.display = 'none';
+}
+
+function updateMainRing() {
+  const progress = 1 - mainTimer.left / mainTimer.total;
+  const offset   = CIRC * (1 - progress);
+  document.getElementById('ring-arc').style.strokeDashoffset = offset;
+  const m = String(Math.floor(mainTimer.left / 60)).padStart(2, '0');
+  const s = String(mainTimer.left % 60).padStart(2, '0');
+  const t = document.getElementById('ring-time');
+  t.textContent = `${m}:${s}`;
+  t.classList.toggle('ticking', mainTimer.run);
+}
+
+/* ══════════════════════════════════════════════════════
+   TIMER — CONTINUE
+══════════════════════════════════════════════════════ */
+let contTimer = { left: 120, total: 120, run: false, done: false, iv: null };
+
+function contTimerReset(secs) {
+  clearInterval(contTimer.iv);
+  contTimer = { left: secs, total: secs, run: false, done: false, iv: null };
+  updateContRing();
+}
+
+function contTimerStart() {
+  if (contTimer.run) return;
+  contTimer.run = true;
+  contTimer.iv = setInterval(() => {
+    contTimer.left--;
+    updateContRing();
+    if (contTimer.left <= 0) {
+      clearInterval(contTimer.iv);
+      contTimer.run = false;
+      contTimer.done = true;
+      onContTimerDone();
+    }
+  }, 1000);
+}
+
+function contTimerPause() {
+  clearInterval(contTimer.iv);
+  contTimer.run = false;
+}
+
+function onContTimerDone() {
+  document.getElementById('cont-in-progress').style.display  = 'none';
+  document.getElementById('cont-done-actions').style.display = 'flex';
+  document.getElementById('cont-ring-arc').style.stroke = 'var(--sage)';
+  const t = document.getElementById('cont-ring-time');
+  t.textContent = '✓'; t.classList.add('done'); t.classList.remove('ticking');
+  document.getElementById('cont-ring-sub').style.display = 'none';
+}
+
+function updateContRing() {
+  const progress = 1 - contTimer.left / contTimer.total;
+  const offset   = CIRC * (1 - progress);
+  document.getElementById('cont-ring-arc').style.strokeDashoffset = offset;
+  const m = String(Math.floor(contTimer.left / 60)).padStart(2, '0');
+  const s = String(contTimer.left % 60).padStart(2, '0');
+  const t = document.getElementById('cont-ring-time');
+  t.textContent = `${m}:${s}`;
+  t.classList.toggle('ticking', contTimer.run);
+}
+
+function startContinue(secs) {
+  contTimerReset(secs);
+  go('s-continuing');
+  // small delay so DOM renders first
+  setTimeout(() => contTimerStart(), 80);
+}
+
+/* ══════════════════════════════════════════════════════
+   STUCK HELPERS
+══════════════════════════════════════════════════════ */
+function goTimerFromStuck(label) {
+  state.timerLabel = label;
+  mainTimerReset(120);
+  go('s-timer');
+}
+
+function onSmallerInput() {
+  state.smallerText = document.getElementById('smaller-input').value;
+  document.getElementById('smaller-btn').disabled = !state.smallerText.trim();
+}
+
+function useSmallerStep() {
+  const v = state.smallerText.trim();
+  if (!v) return;
+  // Replace the current step in stepList
+  const filled = getFilledSteps();
+  // find original index in stepList
+  let found = 0;
+  let count = 0;
+  for (let i = 0; i < state.stepList.length; i++) {
+    if (state.stepList[i].trim()) {
+      if (count === state.stepIdx) { found = i; break; }
+      count++;
+    }
+  }
+  state.stepList[found] = v;
+  // update DOM
+  const el = document.getElementById('step-' + found);
+  if (el) el.value = v;
+  state.activeStep = v;
+  state.timerLabel = "Tiny step:";
+  state.smallerText = '';
+  go('s-timer');
+}
+
+/* ══════════════════════════════════════════════════════
+   NEXT STEP
+══════════════════════════════════════════════════════ */
+function goNextStep() {
+  const filled = getFilledSteps();
+  const next   = state.stepIdx + 1;
+  if (next >= filled.length) {
+    go('s-done');
+  } else {
+    state.stepIdx    = next;
+    state.activeStep = filled[next];
+    state.timerLabel = "Next step:";
+    go('s-timer');
+  }
+}
+
+/* ══════════════════════════════════════════════════════
+   DONE SCREEN
+══════════════════════════════════════════════════════ */
+function onFeelWord() {
+  state.feelWord = document.getElementById('feel-word').value;
+  const echo = document.getElementById('feel-echo');
+  if (state.feelWord.trim()) {
+    echo.style.display = 'block';
+    echo.innerHTML = `You were <em>${escHtml(state.feelWord.trim())}</em> — and you started anyway.`;
+  } else {
+    echo.style.display = 'none';
+  }
+}
+/* ══════════════════════════════════════════════════════
+   FULL RESET
+══════════════════════════════════════════════════════ */
+function fullReset() {
+  // clear timers
+  clearInterval(mainTimer.iv);
+  clearInterval(contTimer.iv);
+  // clear inputs
+  document.getElementById('task-input').value = '';
+  for (let i = 0; i < 4; i++) {
+    const el = document.getElementById('step-' + i);
+    if (el) { el.value = ''; el.classList.remove('filled'); }
+  }
+  // reset state
+  state.task = ''; state.stepList = ['','','','']; state.stepIdx = 0;
+  state.activeStep = ''; state.timerLabel = 'Do this now:';
+  state.smallerText = ''; state.feelWord = '';
+  // navigate
+  go('s-welcome');
+}
+
+/* ══════════════════════════════════════════════════════
+   UTIL
+══════════════════════════════════════════════════════ */
+function escHtml(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+</script>
+</body>
+</html>
